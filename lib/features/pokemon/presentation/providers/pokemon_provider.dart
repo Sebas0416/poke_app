@@ -13,8 +13,6 @@ import 'package:poke_app/features/pokemon/domain/entities/pokemon_entity.dart';
 import 'package:poke_app/features/pokemon/domain/repositories/pokemon_repository.dart';
 import 'package:poke_app/features/pokemon/domain/usecases/get_pokemon_usecases.dart';
 
-// --- Infrastructure ---
-
 final isarProvider = FutureProvider<Isar>((ref) async {
   final dir = await getApplicationDocumentsDirectory();
   return await Isar.open(
@@ -59,8 +57,6 @@ final getPokemonDetailUseCaseProvider =
   return GetPokemonDetailUseCase(repo);
 });
 
-// --- Pokemon List State ---
-
 abstract class PokemonListState {}
 
 class PokemonListInitial extends PokemonListState {}
@@ -70,7 +66,12 @@ class PokemonListLoading extends PokemonListState {}
 class PokemonListLoaded extends PokemonListState {
   final List<PokemonEntity> pokemon;
   final bool isOffline;
-  PokemonListLoaded(this.pokemon, {this.isOffline = false});
+  final bool hasMore;
+  final bool isLoadingMore;
+  PokemonListLoaded(this.pokemon,
+      {this.isOffline = false,
+      this.hasMore = true,
+      this.isLoadingMore = false});
 }
 
 class PokemonListError extends PokemonListState {
@@ -86,34 +87,97 @@ final pokemonListProvider =
 class PokemonListNotifier extends StateNotifier<PokemonListState> {
   final Ref _ref;
 
+  static const int _pageSize = 20;
+  int _offset = 0;
+  bool _hasMore = true;
+  List<PokemonEntity> _allPokemon = [];
+  bool _isLoadingMore = false;
+
   PokemonListNotifier(this._ref) : super(PokemonListInitial()) {
     loadPokemon();
   }
 
   Future<void> loadPokemon({bool forceRefresh = false}) async {
+    if (state is PokemonListLoading) return;
+
+    if (forceRefresh) {
+      _offset = 0;
+      _hasMore = true;
+      _allPokemon = [];
+    }
+
     state = PokemonListLoading();
 
     final isConnected = await _ref.read(isConnectedProvider.future);
     final useCase = await _ref.read(getPokemonListUseCaseProvider.future);
-    final result = await useCase.call(forceRefresh: forceRefresh);
+    final result = await useCase.call(
+      limit: _pageSize,
+      offset: _offset,
+      forceRefresh: forceRefresh,
+    );
 
     result.fold(
       (failure) => state = PokemonListError(failure.message),
-      (pokemon) => state = PokemonListLoaded(
-        pokemon,
-        isOffline: !isConnected,
-      ),
+      (pokemon) {
+        _allPokemon = [..._allPokemon, ...pokemon];
+        _offset += _pageSize;
+        _hasMore = pokemon.length == _pageSize;
+        state = PokemonListLoaded(
+          _allPokemon,
+          isOffline: !isConnected,
+          hasMore: _hasMore,
+        );
+      },
     );
+  }
+
+  Future<void> loadMore() async {
+    if (!_hasMore) return;
+    if (_isLoadingMore) return;
+    if (state is PokemonListLoading) return;
+    _isLoadingMore = true;
+    if (state is PokemonListLoaded) {
+      state = PokemonListLoaded(
+        _allPokemon,
+        isOffline: false,
+        hasMore: _hasMore,
+        isLoadingMore: true,
+      );
+    }
+    final isConnected = await _ref.read(isConnectedProvider.future);
+    final useCase = await _ref.read(getPokemonListUseCaseProvider.future);
+    final result = await useCase.call(
+      limit: _pageSize,
+      offset: _offset,
+    );
+
+    result.fold(
+      (failure) {
+        _isLoadingMore = false;
+        state = PokemonListError(failure.message);
+      },
+      (pokemon) {
+        _allPokemon = [..._allPokemon, ...pokemon];
+        _offset += _pageSize;
+        _hasMore = pokemon.length == _pageSize;
+        _isLoadingMore = false;
+        state = PokemonListLoaded(
+          _allPokemon,
+          isOffline: !isConnected,
+          hasMore: _hasMore,
+          isLoadingMore: false,
+        );
+      },
+    );
+    _isLoadingMore = false;
   }
 
   Future<void> refresh() => loadPokemon(forceRefresh: true);
 }
 
-
-
 abstract class PokemonDetailState {}
 
-class PokemonDetailInitial {}
+class PokemonDetailInitial extends PokemonDetailState {}
 
 class PokemonDetailLoading extends PokemonDetailState {}
 
@@ -127,16 +191,17 @@ class PokemonDetailError extends PokemonDetailState {
   PokemonDetailError(this.message);
 }
 
-final pokemonDetailProvider = StateNotifierProvider.family
+final pokemonDetailProvider = StateNotifierProvider.family<
     PokemonDetailNotifier, PokemonDetailState, int>(
-  (ref, id) => PokemonDetailNotifier(ref, id),
+  (ref, pokemonId) => PokemonDetailNotifier(ref, pokemonId),
 );
 
 class PokemonDetailNotifier extends StateNotifier<PokemonDetailState> {
   final Ref _ref;
   final int _pokemonId;
 
-  PokemonDetailNotifier(this._ref, this._pokemonId) : super(PokemonDetailInitial()) {
+  PokemonDetailNotifier(this._ref, this._pokemonId)
+      : super(PokemonDetailInitial()) {
     loadDetail();
   }
 

@@ -5,6 +5,7 @@ import 'package:poke_app/features/auth/presentation/pages/confirm_page.dart';
 import 'package:poke_app/features/auth/presentation/pages/login_page.dart';
 import 'package:poke_app/features/auth/presentation/pages/register_page.dart';
 import 'package:poke_app/features/auth/presentation/pages/splash_page.dart';
+import 'package:poke_app/features/pokemon/presentation/pages/home_page.dart';
 
 abstract class AppRoutes {
   static const splash = '/';
@@ -55,11 +56,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.home,
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,
-          child: const Scaffold(
-            body: Center(child: Text('Home — próximamente')),
-          ),
+          child: const HomePage(),
           transitionsBuilder: _fadeTransition,
         ),
+        routes: [
+          GoRoute(
+            path: 'pokemon/:id',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: Scaffold(
+                body: Center(
+                  child: Text('Detail — próximamente'),
+                ),
+              ),
+              transitionsBuilder: _slideTransition,
+            ),
+          ),
+          GoRoute(
+            path: 'settings',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const Scaffold(
+                body: Center(child: Text('Settings — próximamente')),
+              ),
+              transitionsBuilder: _slideTransition,
+            ),
+          ),
+        ],
       ),
     ],
   );

@@ -31,22 +31,19 @@ class PokemonRepositoryImpl implements PokemonRepository {
     int offset = 0,
     bool forceRefresh = false,
   }) async {
-    // Si no fuerza refresh intenta caché primero
-    if (!forceRefresh) {
+    if (!forceRefresh && offset == 0) {
       final cached = await _local.getCachedPokemonList();
       if (cached != null && cached.isNotEmpty) {
         return Right(cached.map(_isarToEntity).toList());
       }
     }
 
-    // Fetch desde red
     if (_isConnected()) {
       try {
         final models = await _remote.getPokemonList(
           limit: limit,
           offset: offset,
         );
-        // Guarda en caché
         final isarModels = models.map((m) {
           return PokemonIsarModel()
             ..id = m.id
@@ -66,13 +63,11 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   @override
   Future<Either<Failure, PokemonDetailEntity>> getPokemonDetail(int id) async {
-    // Intenta caché primero
     final cached = await _local.getCachedPokemonDetail(id);
     if (cached != null) {
       return Right(_isarDetailToEntity(cached));
     }
 
-    // Fetch desde red
     if (_isConnected()) {
       try {
         final model = await _remote.getPokemonDetail(id);

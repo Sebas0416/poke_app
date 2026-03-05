@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// Base class for all domain failures.
-/// Using sealed classes pattern for exhaustive matching.
 sealed class Failure extends Equatable {
   final String message;
   const Failure(this.message);
@@ -19,7 +17,7 @@ class NetworkFailure extends Failure {
 class ServerFailure extends Failure {
   final int? statusCode;
   const ServerFailure({String message = 'Error del servidor', this.statusCode})
-    : super(message);
+      : super(message);
 
   @override
   List<Object> get props => [message, statusCode ?? 0];

@@ -10,7 +10,7 @@ import amplify_secure_storage
 import connectivity_plus
 import device_info_plus
 import flutter_secure_storage_darwin
-import isar_flutter_libs
+import isar_community_flutter_libs
 import package_info_plus
 import sqflite_darwin
 

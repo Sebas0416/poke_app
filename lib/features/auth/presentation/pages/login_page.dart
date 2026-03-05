@@ -109,7 +109,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                             const AnimatedPokeball(size: 100),
                             const SizedBox(height: 16),
                             const Text(
-                              'Pokédex',
+                              'Poke App',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 36,

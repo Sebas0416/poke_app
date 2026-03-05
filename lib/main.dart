@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:poke_app/core/providers/theme_provider.dart';
 import 'package:poke_app/core/router/app_router.dart';
 import 'package:poke_app/core/theme/app_theme.dart';
 import 'amplifyconfiguration.dart';
@@ -29,13 +30,15 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final primaryColor = ref.watch(themeColorProvider);
 
     return MaterialApp.router(
       title: 'Poke App',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      theme: AppTheme.lightTheme(primaryColor),
+      darkTheme: AppTheme.darkTheme(primaryColor),
+      themeMode: themeMode,
       routerConfig: router,
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

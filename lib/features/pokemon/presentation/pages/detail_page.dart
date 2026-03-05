@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:poke_app/core/widgets/gradient_background.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_detail_entity.dart';
-import 'package:poke_app/features/pokemon/domain/entities/pokemon_entity.dart';
 import 'package:poke_app/features/pokemon/presentation/providers/pokemon_provider.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_info_chip.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_stat_bar.dart';
@@ -49,12 +48,10 @@ class DetailPage extends ConsumerWidget {
 
     return CustomScrollView(
       slivers: [
-        // Header
         SliverToBoxAdapter(
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // Círculo decorativo de fondo
               Positioned(
                 top: -40,
                 child: Container(
@@ -68,7 +65,6 @@ class DetailPage extends ConsumerWidget {
               ),
               Column(
                 children: [
-                  // Back button y número
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -95,7 +91,6 @@ class DetailPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  // Imagen con Hero
                   Hero(
                     tag: 'pokemon_${pokemon.id}',
                     child: CachedNetworkImage(
@@ -123,7 +118,6 @@ class DetailPage extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Nombre
                   Text(
                     pokemon.name.toUpperCase(),
                     style: const TextStyle(
@@ -134,7 +128,6 @@ class DetailPage extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Tipos
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: pokemon.types
@@ -147,7 +140,6 @@ class DetailPage extends ConsumerWidget {
             ],
           ),
         ),
-        // Info chips
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -181,7 +173,6 @@ class DetailPage extends ConsumerWidget {
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        // Habilidades
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -231,7 +222,6 @@ class DetailPage extends ConsumerWidget {
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        // Stats
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),

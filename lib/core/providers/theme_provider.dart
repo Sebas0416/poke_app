@@ -52,7 +52,7 @@ final themeColorProvider = StateNotifierProvider<ThemeColorNotifier, Color>(
 );
 
 class ThemeColorNotifier extends StateNotifier<Color> {
-  ThemeColorNotifier() : super(const Color(0xFFE94560)) {
+  ThemeColorNotifier() : super(const Color(0xFF0F3460)) {
     _loadSaved();
   }
 
@@ -67,7 +67,7 @@ class ThemeColorNotifier extends StateNotifier<Color> {
     state = color;
     await _storage.write(
       key: _themeColorKey,
-      value: color.value.toString(),
+      value: color.toARGB32().toString(),
     );
   }
 }

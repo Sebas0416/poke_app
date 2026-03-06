@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:poke_app/core/errors/failures.dart';
+import 'package:poke_app/core/utils/translator.dart';
 import 'package:poke_app/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDatasource {
@@ -45,8 +46,10 @@ class CognitoAuthDatasource implements AuthRemoteDatasource {
       throw const AuthFailure('No existe una cuenta con este correo');
     } on UserNotConfirmedException {
       throw const AuthFailure('Confirma tu correo antes de ingresar');
+    } on NetworkException {
+      throw const AuthFailure('Sin conexión a internet');
     } on AuthException catch (e) {
-      throw AuthFailure(e.message);
+      throw AuthFailure(translateError(e.message));
     }
   }
 
@@ -69,10 +72,14 @@ class CognitoAuthDatasource implements AuthRemoteDatasource {
       );
     } on UsernameExistsException {
       throw const AuthFailure('Ya existe una cuenta con este correo');
-    } on InvalidPasswordException catch (e) {
-      throw AuthFailure(e.message);
+    } on InvalidPasswordException {
+      throw const AuthFailure(
+        'La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un carácter especial',
+      );
+    } on NetworkException {
+      throw const AuthFailure('Sin conexión a internet');
     } on AuthException catch (e) {
-      throw AuthFailure(e.message);
+      throw AuthFailure(translateError(e.message));
     }
   }
 
@@ -90,8 +97,10 @@ class CognitoAuthDatasource implements AuthRemoteDatasource {
       throw const AuthFailure('El código de verificación es incorrecto');
     } on ExpiredCodeException {
       throw const AuthFailure('El código expiró, solicita uno nuevo');
+    } on NetworkException {
+      throw const AuthFailure('Sin conexión a internet');
     } on AuthException catch (e) {
-      throw AuthFailure(e.message);
+      throw AuthFailure(translateError(e.message));
     }
   }
 

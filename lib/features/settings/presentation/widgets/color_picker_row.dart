@@ -13,7 +13,8 @@ class ColorPickerRow extends ConsumerWidget {
       spacing: 12,
       runSpacing: 12,
       children: appColors.map((appColor) {
-        final isSelected = selectedColor.value == appColor.color.value;
+        final isSelected =
+            selectedColor.toARGB32() == appColor.color.toARGB32();
         return GestureDetector(
           onTap: () => ref.read(themeColorProvider.notifier).setColor(
                 appColor.color,

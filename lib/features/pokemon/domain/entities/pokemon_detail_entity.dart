@@ -26,6 +26,10 @@ class PokemonDetailEntity extends Equatable {
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
       'sprites/pokemon/other/official-artwork/$id.png';
 
+  String get animatedImageUrl =>
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
+      'sprites/pokemon/versions/generation-v/black-white/animated/$id.gif';
+
   double get heightInMeters => height / 10;
 
   double get weightInKg => weight / 10;

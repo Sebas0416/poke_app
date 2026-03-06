@@ -6,6 +6,7 @@ import 'package:poke_app/core/widgets/gradient_background.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_detail_entity.dart';
 import 'package:poke_app/features/pokemon/presentation/providers/pokemon_provider.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_info_chip.dart';
+import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_particles.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_stat_bar.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
 import 'package:shimmer/shimmer.dart';
@@ -63,6 +64,7 @@ class DetailPage extends ConsumerWidget {
                   ),
                 ),
               ),
+              PokemonParticles(color: typeColor),
               Column(
                 children: [
                   Padding(

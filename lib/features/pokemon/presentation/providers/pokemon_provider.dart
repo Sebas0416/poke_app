@@ -87,7 +87,7 @@ final pokemonListProvider =
 class PokemonListNotifier extends StateNotifier<PokemonListState> {
   final Ref _ref;
 
-  static const int _pageSize = 20;
+  static const int _pageSize = 10;
   int _offset = 0;
   bool _hasMore = true;
   List<PokemonEntity> _allPokemon = [];
@@ -216,3 +216,22 @@ class PokemonDetailNotifier extends StateNotifier<PokemonDetailState> {
     );
   }
 }
+
+final searchQueryProvider = StateProvider<String>((ref) => '');
+final selectedTypeProvider = StateProvider<String?>((ref) => null);
+
+final filteredPokemonProvider = Provider<List<PokemonEntity>>((ref) {
+  final pokemonState = ref.watch(pokemonListProvider);
+  if (pokemonState is! PokemonListLoaded) return [];
+
+  final query = ref.watch(searchQueryProvider).toLowerCase();
+  final selectedType = ref.watch(selectedTypeProvider);
+
+  return pokemonState.pokemon.where((p) {
+    final matchesQuery = query.isEmpty ||
+        p.name.toLowerCase().contains(query) ||
+        p.id.toString() == query;
+    final matchesType = selectedType == null || p.types.contains(selectedType);
+    return matchesQuery && matchesType;
+  }).toList();
+});

@@ -44,7 +44,6 @@ class EvolutionBottomSheet extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle
           Container(
             width: 40,
             height: 4,
@@ -54,7 +53,6 @@ class EvolutionBottomSheet extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 20),
-          // Título
           Row(
             children: [
               Icon(

@@ -112,8 +112,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       PokemonListLoading() =>
                         _buildLoading(),
                       PokemonListError(:final message) => _buildError(message),
-                      PokemonListLoaded() =>
-                        _buildCarousel(pokemonState as PokemonListLoaded),
+                      PokemonListLoaded() => _buildCarousel(pokemonState),
                       PokemonListState() => throw UnimplementedError(),
                     },
                   ),

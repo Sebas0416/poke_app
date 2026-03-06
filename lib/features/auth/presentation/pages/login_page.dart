@@ -8,6 +8,7 @@ import 'package:poke_app/core/widgets/gradient_button.dart';
 import 'package:poke_app/core/widgets/custom_text_field.dart';
 import 'package:poke_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:poke_app/features/auth/presentation/widgets/animated_pokeball.dart';
+import 'package:poke_app/features/auth/presentation/widgets/email_dialog.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -195,10 +196,22 @@ class _LoginPageState extends ConsumerState<LoginPage>
                             ],
                           ),
                           TextButton(
-                            onPressed: () => context.push(
-                              AppRoutes.confirm,
-                              extra: _emailController.text.trim(),
-                            ),
+                            onPressed: () async {
+                              final email = _emailController.text.trim();
+                              if (Validators.email(email) == null) {
+                                context.push(AppRoutes.confirm, extra: email);
+                                return;
+                              }
+                              final emailFromDialog = await showDialog<String>(
+                                context: context,
+                                builder: (context) => EmailDialog(),
+                              );
+
+                              if (emailFromDialog != null && context.mounted) {
+                                context.push(AppRoutes.confirm,
+                                    extra: emailFromDialog);
+                              }
+                            },
                             child: Text(
                               '¿Ya tienes un código de verificación?',
                               style: TextStyle(

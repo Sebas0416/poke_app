@@ -89,7 +89,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Pokédex',
+                      'Poke App',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 36,

@@ -67,7 +67,7 @@ class ThemeColorNotifier extends StateNotifier<Color> {
     state = color;
     await _storage.write(
       key: _themeColorKey,
-      value: color.toString(),
+      value: color.value.toString(),
     );
   }
 }

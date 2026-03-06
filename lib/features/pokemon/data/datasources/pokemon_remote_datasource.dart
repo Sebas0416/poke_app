@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:poke_app/features/pokemon/data/models/pokemo_detail_model.dart';
 import 'package:poke_app/features/pokemon/data/models/pokemon_model.dart';
+import 'package:poke_app/features/pokemon/domain/entities/pokemon_evolution_entity.dart';
 
 abstract class PokemonRemoteDatasource {
   Future<List<PokemonModel>> getPokemonList({int limit, int offset});
   Future<PokemonDetailModel> getPokemonDetail(int id);
+  Future<List<PokemonEvolutionEntity>> getPokemonEvolutions(int pokemonId);
 }
 
 class PokemonRemoteDatasourceImpl implements PokemonRemoteDatasource {
@@ -60,6 +62,41 @@ class PokemonRemoteDatasourceImpl implements PokemonRemoteDatasource {
       return PokemonDetailModel.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception('Error fetching pokemon detail: ${e.message}');
+    }
+  }
+
+  @override
+  Future<List<PokemonEvolutionEntity>> getPokemonEvolutions(
+      int pokemonId) async {
+    try {
+      final speciesRes = await _dio.get('/pokemon-species/$pokemonId');
+      final evolutionUrl = speciesRes.data['evolution_chain']['url'] as String;
+
+      final evoRes = await _dio.get(evolutionUrl);
+      final chain = evoRes.data['chain'];
+
+      final evolutions = <PokemonEvolutionEntity>[];
+      _parseChain(chain, evolutions);
+      return evolutions;
+    } on DioException catch (e) {
+      throw Exception('Error fetching evolutions: ${e.message}');
+    }
+  }
+
+  void _parseChain(
+    Map<String, dynamic> chain,
+    List<PokemonEvolutionEntity> result,
+  ) {
+    final name = chain['species']['name'] as String;
+    final url = chain['species']['url'] as String;
+    final urlParts = url.split('/');
+    final id = int.parse(urlParts[urlParts.length - 2]);
+
+    result.add(PokemonEvolutionEntity(id: id, name: name));
+
+    final evolvesTo = chain['evolves_to'] as List;
+    for (final next in evolvesTo) {
+      _parseChain(next, result);
     }
   }
 }

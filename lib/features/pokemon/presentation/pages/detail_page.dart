@@ -1,13 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:poke_app/core/widgets/gradient_background.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_detail_entity.dart';
 import 'package:poke_app/features/pokemon/presentation/providers/pokemon_provider.dart';
+import 'package:poke_app/features/pokemon/presentation/widgets/detail_abilities.dart';
+import 'package:poke_app/features/pokemon/presentation/widgets/detail_header.dart';
+import 'package:poke_app/features/pokemon/presentation/widgets/detail_stats.dart';
+import 'package:poke_app/features/pokemon/presentation/widgets/evolution_bottom_sheet.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_info_chip.dart';
-import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_particles.dart';
-import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_stat_bar.dart';
 import 'package:poke_app/features/pokemon/presentation/widgets/pokemon_type_chip.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -50,97 +51,7 @@ class DetailPage extends ConsumerWidget {
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                top: -40,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: typeColor.withAlpha(40),
-                  ),
-                ),
-              ),
-              PokemonParticles(color: typeColor),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back_ios,
-                            color: Colors.white,
-                          ),
-                          onPressed: () => context.pop(),
-                        ),
-                        Text(
-                          '#${pokemon.id.toString().padLeft(3, '0')}',
-                          style: TextStyle(
-                            color: Colors.white.withAlpha(180),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Hero(
-                    tag: 'pokemon_${pokemon.id}',
-                    child: CachedNetworkImage(
-                      imageUrl: pokemon.imageUrl,
-                      height: 200,
-                      width: 200,
-                      fit: BoxFit.contain,
-                      placeholder: (_, __) => Shimmer.fromColors(
-                        baseColor: Colors.white.withAlpha(40),
-                        highlightColor: Colors.white.withAlpha(80),
-                        child: Container(
-                          height: 200,
-                          width: 200,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      errorWidget: (_, __, ___) => const Icon(
-                        Icons.catching_pokemon,
-                        size: 100,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    pokemon.name.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: pokemon.types
-                        .map((t) => PokemonTypeChip(type: t))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ],
-          ),
+          child: DetailHeader(pokemon: pokemon, typeColor: typeColor),
         ),
         SliverToBoxAdapter(
           child: Padding(
@@ -174,81 +85,60 @@ class DetailPage extends ConsumerWidget {
             ),
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Habilidades',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            child: GestureDetector(
+              onTap: () => EvolutionBottomSheet.show(
+                context,
+                pokemonId: pokemonId,
+                typeColor: typeColor,
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [typeColor, typeColor.withAlpha(180)],
                   ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: typeColor.withAlpha(100),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: pokemon.abilities
-                      .map(
-                        (a) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: typeColor.withAlpha(60),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: typeColor.withAlpha(120),
-                            ),
-                          ),
-                          child: Text(
-                            a.replaceAll('-', ' ').toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.auto_awesome, color: Colors.white, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      'Ver evolución',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
         SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Estadísticas base',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ...pokemon.stats.map(
-                  (stat) => PokemonStatBar(
-                    name: stat.name,
-                    value: stat.baseStat,
-                    color: typeColor,
-                  ),
-                ),
-              ],
-            ),
+          child: DetailAbilities(
+            abilities: pokemon.abilities,
+            typeColor: typeColor,
           ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        SliverToBoxAdapter(
+          child: DetailStats(stats: pokemon.stats, typeColor: typeColor),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 40)),
       ],

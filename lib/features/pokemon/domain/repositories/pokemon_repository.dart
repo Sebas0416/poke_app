@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:poke_app/core/errors/failures.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_detail_entity.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_entity.dart';
+import 'package:poke_app/features/pokemon/domain/entities/pokemon_evolution_entity.dart';
 
 abstract class PokemonRepository {
   Future<Either<Failure, List<PokemonEntity>>> getPokemonList({
@@ -13,4 +14,6 @@ abstract class PokemonRepository {
   Future<Either<Failure, PokemonDetailEntity>> getPokemonDetail(int id);
 
   Future<bool> hasCachedData();
+  Future<Either<Failure, List<PokemonEvolutionEntity>>> getPokemonEvolutions(
+      int id);
 }

@@ -5,6 +5,7 @@ import 'package:poke_app/features/pokemon/data/datasources/pokemon_remote_dataso
 import 'package:poke_app/features/pokemon/data/models/pokemon_isar_model.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_detail_entity.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_entity.dart';
+import 'package:poke_app/features/pokemon/domain/entities/pokemon_evolution_entity.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_stat_entity.dart';
 import 'package:poke_app/features/pokemon/domain/repositories/pokemon_repository.dart';
 
@@ -90,6 +91,21 @@ class PokemonRepositoryImpl implements PokemonRepository {
     }
 
     return const Left(NetworkFailure('Sin conexión para obtener el detalle'));
+  }
+
+  @override
+  Future<Either<Failure, List<PokemonEvolutionEntity>>> getPokemonEvolutions(
+    int id,
+  ) async {
+    if (_isConnected()) {
+      try {
+        final evolutions = await _remote.getPokemonEvolutions(id);
+        return Right(evolutions);
+      } catch (e) {
+        return Left(ServerFailure(message: e.toString()));
+      }
+    }
+    return const Left(NetworkFailure('Sin conexión'));
   }
 
   @override

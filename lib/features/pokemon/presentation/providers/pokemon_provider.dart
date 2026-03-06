@@ -10,6 +10,7 @@ import 'package:poke_app/features/pokemon/data/models/pokemon_isar_model.dart';
 import 'package:poke_app/features/pokemon/data/repositories/pokemon_repository_impl.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_detail_entity.dart';
 import 'package:poke_app/features/pokemon/domain/entities/pokemon_entity.dart';
+import 'package:poke_app/features/pokemon/domain/entities/pokemon_evolution_entity.dart';
 import 'package:poke_app/features/pokemon/domain/repositories/pokemon_repository.dart';
 import 'package:poke_app/features/pokemon/domain/usecases/get_pokemon_usecases.dart';
 
@@ -234,4 +235,15 @@ final filteredPokemonProvider = Provider<List<PokemonEntity>>((ref) {
     final matchesType = selectedType == null || p.types.contains(selectedType);
     return matchesQuery && matchesType;
   }).toList();
+});
+
+final pokemonEvolutionsProvider =
+    FutureProvider.family<List<PokemonEvolutionEntity>, int>(
+        (ref, pokemonId) async {
+  final repo = await ref.watch(pokemonRepositoryProvider.future);
+  final result = await repo.getPokemonEvolutions(pokemonId);
+  return result.fold(
+    (failure) => throw failure.message,
+    (evolutions) => evolutions,
+  );
 });

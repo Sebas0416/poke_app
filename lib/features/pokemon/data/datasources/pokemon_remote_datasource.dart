@@ -24,7 +24,6 @@ class PokemonRemoteDatasourceImpl implements PokemonRemoteDatasource {
         queryParameters: {'limit': limit, 'offset': offset},
       );
       final results = response.data['results'] as List;
-      //return results.map((json) => PokemonModel.fromListJson(json)).toList();
       final ids = results.map((json) {
         final urlParts = (json['url'] as String).split('/');
         return int.parse(urlParts[urlParts.length - 2]);
@@ -49,21 +48,6 @@ class PokemonRemoteDatasourceImpl implements PokemonRemoteDatasource {
         allModels.addAll(batch);
       }
       return allModels;
-
-      final details = await Future.wait(
-        results.map((json) async {
-          final urlParts = (json['url'] as String).split('/');
-          final id = int.parse(urlParts[urlParts.length - 2]);
-          try {
-            final detail = await _dio.get('/pokemon/$id');
-            return PokemonModel.fromDetailJson(detail.data);
-          } catch (_) {
-            return PokemonModel.fromListJson(json);
-          }
-        }),
-      );
-
-      return details;
     } on DioException catch (e) {
       throw Exception('Error fetching pokemon list: ${e.message}');
     }

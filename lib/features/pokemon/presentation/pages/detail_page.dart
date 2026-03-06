@@ -195,32 +195,35 @@ class DetailPage extends ConsumerWidget {
 
   Widget _buildError(BuildContext context, String message, WidgetRef ref) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.white54),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(color: Colors.white.withAlpha(180)),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () => ref
-                .read(pokemonDetailProvider(pokemonId).notifier)
-                .loadDetail(),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE94560),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.white54),
+            const SizedBox(height: 16),
+            Text(
+              'No se pudo cargar la información de $pokemonName',
+              style: TextStyle(color: Colors.white.withAlpha(180)),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => ref
+                  .read(pokemonDetailProvider(pokemonId).notifier)
+                  .loadDetail(),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Reintentar'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE94560),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

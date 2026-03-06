@@ -28,7 +28,7 @@ class PokemonErrorState extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              message,
+              'No te preocupes, esto puede deberse a un problema de conexión o a un error temporal. Intenta refrescar la página o revisa tu conexión a internet.',
               style: TextStyle(color: Colors.white.withAlpha(150)),
               textAlign: TextAlign.center,
             ),

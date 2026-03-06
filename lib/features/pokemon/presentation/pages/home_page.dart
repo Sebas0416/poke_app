@@ -76,12 +76,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ],
                     ),
                   ),
-                  const SearchBarWidget(),
-                  const SizedBox(height: 12),
-                  const TypeFilterRow(),
-                  const SizedBox(height: 8),
-                  const PokemonCounter(),
-                  const SizedBox(height: 4),
                   connectivityAsync.when(
                     data: (isOnline) => isOnline
                         ? const SizedBox.shrink()
@@ -89,6 +83,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                     loading: () => const SizedBox.shrink(),
                     error: (_, __) => const SizedBox.shrink(),
                   ),
+                  const SearchBarWidget(),
+                  const SizedBox(height: 12),
+                  const TypeFilterRow(),
+                  const SizedBox(height: 8),
+                  const PokemonCounter(),
+                  const SizedBox(height: 4),
                   Expanded(
                     child: switch (pokemonState) {
                       PokemonListInitial() ||
